@@ -1,0 +1,71 @@
+//Variables and objects
+let total_cases = document.getElementById("total_cases");
+let total_death = document.getElementById("total_death");
+let total_recovered = document.getElementById("total_recovered");
+let new_case = document.getElementById("new_case");
+let new_death = document.getElementById("new_death");
+let table = document.getElementById("countries_stat");
+let date = document.getElementById("date");
+
+//fetch world data from the server
+fetch("https://coronavirus-monitor.p.rapidapi.com/coronavirus/worldstat.php", {
+  method: "GET",
+  headers: {
+    "x-rapidapi-host": "coronavirus-monitor.p.rapidapi.com",
+    "x-rapidapi-key": "0431aa11a8mshc72bbdf2a981345p187ad1jsn328c6c1ae576"
+  }
+})
+  .then((response) =>
+    response.json().then((data) => {
+      console.log(data);
+      total_cases.innerHTML = data.total_cases;
+      total_death.innerHTML = data.total_deaths;
+      total_recovered.innerHTML = data.total_recovered;
+      new_case.innerHTML = data.new_cases;
+      new_death.innerHTML = data.new_deaths;
+    })
+  )
+  .catch((err) => {
+    console.log(err);
+  });
+
+//fetching table data for each country
+fetch(
+  "https://coronavirus-monitor.p.rapidapi.com/coronavirus/cases_by_country.php",
+  {
+    method: "GET",
+    headers: {
+      "x-rapidapi-host": "coronavirus-monitor.p.rapidapi.com",
+      "x-rapidapi-key": "53009286a0mshdc8ec356f7aa205p1e0e80jsn5858f548ed53"
+    }
+  }
+)
+  .then((response) =>
+    response.json().then((data) => {
+      console.log(data);
+      let countries_stat = data.countries_stat;
+      //loop through to get each country stat
+      for (let i = 0; i < countries_stat.length; i++) {
+        console.log(countries_stat[i]);
+        //insert new row inside
+        let row = table.insertRow(i + 1);
+        let country_name = row.insertCell(0);
+        let cases = row.insertCell(1);
+        let deaths = row.insertCell(2);
+        let serious_critical = row.insertCell(3);
+        let recovered_per_country = row.insertCell(4);
+        country_name.innerHTML = countries_stat[i].country_name;
+        cases.innerHTML = countries_stat[i].cases;
+        deaths.innerHTML = countries_stat[i].deaths;
+        serious_critical.innerHTML = countries_stat[i].serious_critical;
+        recovered_per_country.innerHTML = countries_stat[i].total_recovered;
+      }
+    })
+  )
+  .catch((err) => {
+    console.log(err);
+  });
+
+//display date
+let d = new Date();
+date.innerHTML = d.toLocaleString();
